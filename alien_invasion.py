@@ -3,6 +3,7 @@ import pygame
 from settings import Settings
 from ship import Ship
 import game_functions as gf
+from pygame.sprite import Group
 
 
 def run_game():
@@ -14,12 +15,16 @@ def run_game():
 	pygame.display.set_caption("Alien Invasion")
 	ship = Ship(settings, screen)
 
-	"""Start main game cycle"""
+	#Creating group to storage bullets
+	bullets = Group()
+
+	#Start main game cycle
 	while True:
-		"""Keyboard and mouse event tracking"""
-		gf.check_events(ship)
+		#Keyboard and mouse event tracking
+		gf.check_events(settings, screen, ship, bullets)
 		ship.update()
-		gf.update_screen(settings, screen, ship)
+		gf.update_bullets(bullets)
+		gf.update_screen(settings, screen, ship, bullets)
 
 run_game()
 
