@@ -13,10 +13,16 @@ def run_game():
 	screen = pygame.display.set_mode((settings.screen_width, 
 									settings.screen_height))
 	pygame.display.set_caption("Alien Invasion")
+
+	#Create ship
 	ship = Ship(settings, screen)
 
-	#Creating group to storage bullets
+	#Creating bullets group and aliens group
 	bullets = Group()
+	aliens = Group()
+
+	#Create aliens fleet
+	gf.create_fleet(settings, screen, ship, aliens)
 
 	#Start main game cycle
 	while True:
@@ -24,13 +30,6 @@ def run_game():
 		gf.check_events(settings, screen, ship, bullets)
 		ship.update()
 		gf.update_bullets(bullets)
-		gf.update_screen(settings, screen, ship, bullets)
+		gf.update_screen(settings, screen, ship, aliens, bullets)
 
 run_game()
-
-
-
-
-
-
-
