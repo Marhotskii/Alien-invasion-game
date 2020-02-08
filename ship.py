@@ -24,9 +24,11 @@ class Ship():
 		self.moving_right = False
 		self.moving_left = False
 
+
 	def blitme(self):
 		"""Draw the ship in the current position"""
 		self.screen.blit(self.image, self.rect)
+
 
 	def update(self):
 		"""Update ship position"""
@@ -38,3 +40,8 @@ class Ship():
 
 		#Update centerx
 		self.rect.centerx = self.center
+
+
+	def center_ship(self):
+		"""Placing ship in the middle"""
+		self.center = self.screen_rect.centerx

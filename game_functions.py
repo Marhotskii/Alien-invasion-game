@@ -2,6 +2,8 @@ import pygame
 
 from bullet import Bullet
 from alien import Alien
+from time import sleep
+
 
 def check_keydown_events(event, settings, screen, ship, bullets):
 	"""Check keydown events"""
@@ -94,7 +96,7 @@ def check_bullet_alien_collisions(settings, screen, ship, aliens, bullets):
 def get_number_rows(settings, ship_height, alien_height):
 	"""Calculate number of rows"""
 	available_space_y = (settings.screen_height - 
-						(3 * alien_height) - ship_height)
+						(2 * alien_height) - ship_height)
 	number_rows = int(available_space_y / (2 * alien_height))
 	return number_rows
 
@@ -112,7 +114,7 @@ def create_alien(settings, screen, aliens, alien_number, row_number):
 	alien_width = alien.rect.width
 	alien.x = alien_width + 2 * alien_width * alien_number
 	alien.rect.x = alien.x
-	alien.rect.y = alien.rect.height + 2 * alien.rect.height * row_number
+	alien.rect.y = 1.5 * alien.rect.height * row_number
 	aliens.add(alien)
 
 
@@ -148,7 +150,46 @@ def change_fleet_direction(settings, aliens):
 	settings.fleet_direction *= -1
 
 
-def update_aliens(settings, aliens):
+def update_aliens(settings, stats, screen, ship, aliens, bullets):
 	"""Update all of aliens positions"""
 	check_fleet_edges(settings, aliens)
 	aliens.update()
+
+	#Check collisions alien - ship
+	if pygame.sprite.spritecollideany(ship, aliens):
+		ship_hit(settings, stats, screen, ship, aliens, bullets)
+
+	#Check collisions alien - bottom 
+	check_aliens_bottom(settings, stats, screen, ship, aliens, bullets)
+
+
+def ship_hit(settings, stats, screen, ship, aliens, bullets):
+	"""Process collisions alien-ship"""
+	#Derciment ships_left
+	if stats.ships_left > 0:
+		stats.ships_left -= 1
+		print(stats.ships_left, " lifes left")
+
+		#Clear list of aliens and bullets
+		aliens.empty()
+		bullets.empty()
+
+		#Create new aliens fleet and placing ship in the middle
+		create_fleet(settings, screen, ship, aliens)
+		ship.center_ship()
+
+		#Pause
+		sleep(0.5)
+	else:
+		stats.game_active = False
+
+
+def check_aliens_bottom(settings, stats, 
+	screen, ship, aliens, bullets):
+	"""Check aliens collisions with the bottom"""
+	screen_rect = screen.get_rect()
+	for alien in aliens.sprites():
+		if alien.rect.bottom >= screen_rect.bottom:
+			#The same thing happens, as in collision with the ship
+			ship_hit(settings, stats, screen, ship, aliens, bullets)
+			break
