@@ -71,6 +71,8 @@ def check_play_button(settings, screen, stats, play_button,
 
 	button_clicked = play_button.rect.collidepoint(mouse_x, mouse_y)
 	if button_clicked and not stats.game_active:
+		#Settings reset
+		settings.initialize_dynamic_settings()
 
 		#Cursor is hiding
 		pygame.mouse.set_visible(False)
@@ -88,7 +90,7 @@ def check_play_button(settings, screen, stats, play_button,
 		ship.center_ship()
 
 
-def update_screen(settings, screen, stats, ship, aliens,
+def update_screen(settings, screen, stats, sb, ship, aliens,
 	bullets, play_button):
 	"""Update screen"""
 	screen.fill(settings.background_color)
@@ -98,6 +100,9 @@ def update_screen(settings, screen, stats, ship, aliens,
 	ship.blitme()
 	aliens.draw(screen)
 
+	#Draw score
+	sb.show_score()
+
 	#Button visiable if game is not active
 	if not stats.game_active:
 		play_button.draw_button()
@@ -106,7 +111,8 @@ def update_screen(settings, screen, stats, ship, aliens,
 	pygame.display.flip()
 
 
-def update_bullets(settings, screen, ship, aliens, bullets):
+def update_bullets(settings, screen, stats, sb,
+		ship, aliens, bullets):
 	"""Update bullets positions and delete old bullets"""
 	#Update bullets
 	bullets.update()
@@ -115,23 +121,31 @@ def update_bullets(settings, screen, ship, aliens, bullets):
 	for bullet in bullets:
 		if bullet.rect.bottom <= 0:
 			bullets.remove(bullet)
-	check_bullet_alien_collisions(settings, screen, ship, aliens, bullets)
+	check_bullet_alien_collisions(settings, screen, stats, sb,
+		ship, aliens, bullets)
 
 
-def check_bullet_alien_collisions(settings, screen, ship, aliens, bullets):
+def check_bullet_alien_collisions(settings, screen, stats, sb,
+		ship, aliens, bullets):
 	"""Check collisions"""
 	#Check collision bullet with alien
 	collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
+	if collisions:
+		for aliens in collisions.values():
+			stats.score += settings.alien_point * len(aliens)
+	sb.prep_score()
+
 	if len(aliens) == 0:
-		#Create new fleet
+		#Create new fleet, increase speed
 		bullets.empty()
+		settings.increase_speed()
 		create_fleet(settings, screen, ship, aliens)
 
 
 def get_number_rows(settings, ship_height, alien_height):
 	"""Calculate number of rows"""
 	available_space_y = (settings.screen_height - 
-						(2 * alien_height) - ship_height)
+						(3 * alien_height) - ship_height)
 	number_rows = int(available_space_y / (2 * alien_height))
 	return number_rows
 
@@ -149,7 +163,7 @@ def create_alien(settings, screen, aliens, alien_number, row_number):
 	alien_width = alien.rect.width
 	alien.x = alien_width + 2 * alien_width * alien_number
 	alien.rect.x = alien.x
-	alien.rect.y = 1.5 * alien.rect.height * row_number
+	alien.rect.y = alien.rect.height + 1.5 * alien.rect.height * row_number
 	aliens.add(alien)
 
 
