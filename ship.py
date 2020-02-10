@@ -12,6 +12,12 @@ class Ship(Sprite):
 		#Init settings
 		self.settings = settings
 
+		#Load shoot sound
+		self.shoot_sound = pygame.mixer.Sound('sounds/pew.wav')
+
+		#Load death soun
+		self.death_sound = pygame.mixer.Sound('sounds/expl6.wav')
+
 		"""Load ship image and get rectangle"""
 		self.image = pygame.image.load('images/ship.png')
 		self.rect = self.image.get_rect()

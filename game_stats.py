@@ -1,3 +1,5 @@
+import json
+
 class GameStats():
 	"""Tracking game stats"""
 
@@ -10,7 +12,8 @@ class GameStats():
 		self.game_active = False
 
 		#High score
-		self.high_score = 0
+		with open('best_score.json') as score:
+			self.high_score = json.load(score)
 
 
 	def reset_stats(self):

@@ -1,4 +1,5 @@
 import pygame
+import json
 
 from bullet import Bullet
 from alien import Alien
@@ -29,6 +30,7 @@ def fire_bullet(settings, screen, ship, bullets):
 	if len(bullets) < settings.bullets_allowed:
 		new_bullet = Bullet(settings, screen, ship)
 		bullets.add(new_bullet)
+		ship.shoot_sound.play()
 
 
 def check_keyup_events(event, ship):
@@ -225,6 +227,9 @@ def update_aliens(settings, stats, screen, ship, aliens, bullets, sb):
 
 def ship_hit(settings, stats, screen, ship, aliens, bullets, sb):
 	"""Process collisions alien-ship"""
+	#Ship hit sound
+	ship.death_sound.play()
+
 	#Derciment ships_left
 	if stats.ships_left > 0:
 		stats.ships_left -= 1
@@ -242,6 +247,8 @@ def ship_hit(settings, stats, screen, ship, aliens, bullets, sb):
 		sleep(1.5)
 	else:
 		stats.game_active = False
+		with open('best_score.json', 'w') as file_obj:
+			json.dump(stats.high_score, file_obj)
 		#Show cursor
 		pygame.mouse.set_visible(True)
 

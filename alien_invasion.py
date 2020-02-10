@@ -17,6 +17,11 @@ def run_game():
 									settings.screen_height))
 	pygame.display.set_caption("Alien Invasion")
 
+	#Music theme init
+	pygame.mixer.music.load('sounds/music_theme.ogg')
+	pygame.mixer.music.set_volume(0.4)
+	pygame.mixer.music.play(loops=-1)
+
 	#Create play button
 	play_button = Button(settings, screen, "Play")
 
